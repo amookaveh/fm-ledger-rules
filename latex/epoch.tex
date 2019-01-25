@@ -135,14 +135,14 @@ These stake-related calculations are used in the calculation of rewards.
         \wcard\mapsto(a,~\wcard)\in\var{utxo} \right\} \\ 
       \nextdef
       & \fun{baseStake} \in (\Addr\mapsto\Coin) \to \Stake \\
-      & \fun{baseStake}~{outs} =
-          \{\fun{stakeHK_b}~{addr}\mapsto c \mid a\mapsto c\in\var{outs},~a\in\AddrB\} \\
+      & \fun{baseStake}~{vals} =
+          \{\fun{stakeHK_b}~{addr}\mapsto c \mid a\mapsto c\in\var{vals},~a\in\AddrB\} \\
       \nextdef
       & \fun{ptrStake} \in (\Addr\mapsto\Coin) \to (\HashKey\mapsto\Ptr) \to \Stake \\
-      & \fun{ptrStake}~{outs}~{ptrs} =
+      & \fun{ptrStake}~{vals}~{ptrs} =
           \{\var{hk}\mapsto c
           \mid a\mapsto
-          c\in~\var{outs},~a\in\AddrP,~(\fun{addrPtr}~a) \mapsto hk\in\var{ptrs}\} \\
+          c\in~\var{vals},~a\in\AddrP,~(\fun{addrPtr}~a) \mapsto hk\in\var{ptrs}\} \\
       \nextdef
       & \fun{rewardStake} \in (\AddrRWD\mapsto\Coin) \to \Stake \\
       & \fun{rewardStake}~{rewards} =
@@ -154,7 +154,7 @@ These stake-related calculations are used in the calculation of rewards.
       & ~~ \left\{hk\mapsto c \mid hk\notin\var{owners'},~hk\mapsto c\in\var{poolStake} \right\}
            \cup
            \left\{ \var{operator}\mapsto
-             \sum_{\substack{hk\in\var{owners'} \\ hk\mapsto c\in\var{poolStake}}}\right\} \\
+             \sum_{\substack{hk\in\var{owners'} \\ hk\mapsto c\in\var{poolStake}}} c\right\} \\
       & ~~ \where \\
       & ~~~~~~ \var{owners'} = owners \cup \{operator\} \\
       & ~~~~~~ \var{poolStake} =
@@ -282,7 +282,7 @@ each associated to its pool key
 \item $\sigma \in [0,1]$ is the total relative stake of a pool (expressed as a fraction of
 the total stake, which is a sum of the relative member's stake)
 \item $p_r \in [0,1]$ is the relative pledge of a given pool, calculated by normalizing $p$
-\item $\overline{N} \in \R$, for a given pool, is the expected value of the number
+\item $\overline{N} \in \Rnn$, for a given pool, is the expected value of the number
 of slots that the pool will be elected as leader on average
 \item $\var{maxP} \in \Coin$ is the maximum stake that could be received by a particular
 pool
@@ -331,7 +331,7 @@ possible rewards for this pool.
   \emph{Exponential moving average, see in section 6.5.1 of \cite{delegation_design}}
   %
   \begin{align*}
-      & \fun{movingAvg} \in \PParams \to \HashKey \to \N \to \R \to \Avgs \to \R \\
+      & \fun{movingAvg} \in \PParams \to \HashKey \to \N \to \Rnn \to \Avgs \to \R \\
       & \movingAvg{pp}{hk}{n}{\overline{N}}{avgs} =
         \begin{cases}
         \frac{n}{\max(\overline{N}, 1)}
@@ -347,7 +347,7 @@ possible rewards for this pool.
   \emph{Actual Reward Function, called $\hat{f}_j$ in section 6.5.1 of \cite{delegation_design}}
   %
   \begin{align*}
-      & \fun{poolReward} \in \PParams \to \HashKey \to \N \to \R \to \Avgs \to \Coin \to \Coin \\
+      & \fun{poolReward} \in \PParams \to \HashKey \to \N \to \Rnn \to \Avgs \to \Coin \to \Coin \\
       & \poolReward{pp}{hk}{n}{\overline{N}}{avgs}{maxP} =
       \floor*{avg^\gamma\cdot \var{maxP}}\\
       & ~~~\where \\
